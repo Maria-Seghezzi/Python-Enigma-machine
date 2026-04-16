@@ -1,6 +1,6 @@
 class Reflector:
 
-    def __init__(self, wiring):
+    def __init__(self, wiring: list):
         self.wiring = wiring
 
     def encode(self, letter: str):
