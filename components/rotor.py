@@ -25,6 +25,5 @@ class Rotor:
         """
         Encodes letter backward, returns encoded letter (char)
         """
-        letter_index = ord(letter) - 65
-        out_letter_index = self.wiring.index(letter_index)
+        out_letter_index = self.wiring.index(letter)
         return chr(out_letter_index + 65)
