@@ -1,14 +1,14 @@
-# from components.rotor import Rotor
+from components.rotor import Rotor
 from components.reflector import Reflector
 from config.wiring_data import *
+from machine import Machine
 
 word = "HELLO"
 
+rotors = [Rotor(WIRING_I, 1, 0), Rotor(WIRING_II, 5, 0), Rotor(WIRING_III, 0, 0)]
 ref = Reflector(WIRING_R_A)
 
-enc_word = ""
+m = Machine(rotors, ref)
+m.print_components(rotors=[1, 2])
 
-for letter in word:
-    l = ref.encode(letter)
-    print(l)
-    enc_word += l
+m.encode("A")
