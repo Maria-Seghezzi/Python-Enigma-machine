@@ -5,11 +5,20 @@ class Machine:
     def __init__(self, rotors: list[Rotor], reflector: Reflector):
         self.rotors = rotors
         self.reflector = reflector
+        self.letter_count = 0
+
+    def update(self):
+        """
+        Updates rotors positions
+        """
+        for rotor in self.rotors:
+            rotor.update(self.letter_count)
 
     def encode(self, letter):
         """
         Encodes letter
         """
+        self.letter_count += 1
         enc_letter = letter
 
         print("Encoding forward")
@@ -25,6 +34,8 @@ class Machine:
         for rotor in reversed(self.rotors):
             enc_letter = rotor.encode_backward(enc_letter)
             print(enc_letter)
+
+        self.update()
         return letter
 
     def print_components(self, rotors=[1, 2, 3], reflector=1):
