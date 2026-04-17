@@ -230,3 +230,12 @@ WIRING_R_C = [
     "M",
     "H",
 ]
+
+ROTORS_WIRINGS = {
+    "I": WIRING_I,
+    "II": WIRING_II,
+    "III": WIRING_III,
+    "IV": WIRING_IV,
+    "V": WIRING_V,
+}
+REF_WIRING = {"A": WIRING_R_A, "B": WIRING_R_B, "C": WIRING_R_C}
