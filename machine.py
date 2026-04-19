@@ -1,10 +1,11 @@
-from components import Rotor, Reflector
+from components import Rotor, Reflector, Plugboard
 
 
 class Machine:
-    def __init__(self, rotors: list[Rotor], reflector: Reflector):
+    def __init__(self, rotors: list[Rotor], reflector: Reflector, plugboard: Plugboard):
         self.rotors = rotors
         self.reflector = reflector
+        self.plugboard = plugboard
         self.letter_count = 0
 
     def update(self):
@@ -21,6 +22,9 @@ class Machine:
         self.letter_count += 1
         enc_letter = letter
 
+        # Plugboard
+        enc_letter = self.plugboard.encode(enc_letter)
+
         # Encode forward
         for rotor in self.rotors:
             enc_letter = rotor.encode_forward(enc_letter)
@@ -31,6 +35,9 @@ class Machine:
         # Encode backwards
         for rotor in reversed(self.rotors):
             enc_letter = rotor.encode_backward(enc_letter)
+
+        # Plugboard
+        enc_letter = self.plugboard.encode(enc_letter)
 
         self.update()
         return enc_letter
