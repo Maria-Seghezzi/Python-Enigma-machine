@@ -71,3 +71,14 @@ class Machine:
             for l in self.reflector.wiring:
                 print(l, end="")
         print("\n")
+
+
+def encode_message(message: str, machine: Machine):
+    message = message.upper()
+    enc_message = ""
+    for letter in message:
+        if letter.isalpha():
+            enc_message += machine.encode(letter)
+        else:
+            enc_message += letter
+    return enc_message

@@ -1,10 +1,39 @@
-from config.wiring_data import ROTORS_WIRINGS, REF_WIRING
 from components import Rotor, Reflector, Plugboard
-from machine import Machine
+from config.wiring_data import ROTORS_WIRINGS, REF_WIRING
 
-# Future improvements:
-# - Add notchs
-# - Add plugboard
+
+def parse_connections(connection_string):
+    """
+    Check if input contains valid plugboard connections and return Plugboard object
+    """
+    connections_list = connection_string.replace(" ", "").split(",")
+    connections = {}
+    for connection in connections_list:
+        if ":" not in connection:
+            raise ValueError
+        a, b = connection.split(":")
+        a, b = a.upper(), b.upper()
+        if a in connections or b in connections or a == b:
+            raise ValueError
+        connections[a] = b
+        connections[b] = a
+    # Create Plugboard object
+    plugboard_obj = Plugboard(connections)
+
+    return plugboard_obj
+
+
+def parse_ref(ref_string):
+    """
+    Check if input contains valid reflector name and returns reflector object
+    """
+    valid_input = ["A", "B", "C"]
+    if ref_string.upper() not in valid_input:
+        raise ValueError
+    # Create Reflector
+    wiring = REF_WIRING[ref_string]
+    ref_obj = Reflector(wiring)
+    return ref_obj
 
 
 def parse_rotors(rotors_string):
@@ -43,63 +72,7 @@ def parse_rotors(rotors_string):
     return rotors_obj
 
 
-def parse_ref(ref_string):
-    """
-    Check if input contains valid reflector name and returns reflector object
-    """
-    valid_input = ["A", "B", "C"]
-    if ref_string.upper() not in valid_input:
-        raise ValueError
-    # Create Reflector
-    wiring = REF_WIRING[ref_string]
-    ref_obj = Reflector(wiring)
-    return ref_obj
-
-
-def parse_connections(connection_string):
-    """
-    Check if input contains valid plugboard connections and return Plugboard object
-    """
-    connections_list = connection_string.replace(" ", "").split(",")
-    connections = {}
-    for connection in connections_list:
-        if ":" not in connection:
-            raise ValueError
-        a, b = connection.split(":")
-        a, b = a.upper(), b.upper()
-        if a in connections or b in connections or a == b:
-            raise ValueError
-        connections[a] = b
-        connections[b] = a
-    # Create Plugboard object
-    plugboard_obj = Plugboard(connections)
-
-    return plugboard_obj
-
-
-def print_presentation():
-    """
-    Print presentation
-    """
-    presentation = "ENIGMA MACHINE EMULATOR"
-    for j in range(2):
-        for i in range(len(presentation) + 12):
-            print("#", end="")
-        print()
-    for i in range(6):
-        print("-", end="")
-    print(presentation, end="")
-    for i in range(6):
-        print("-", end="")
-    print()
-    for j in range(2):
-        for i in range(len(presentation) + 12):
-            print("#", end="")
-        print()
-    print("\n")
-
-
-def configuration():
+def get_configuration():
     """
     Ask user to define the machine configuration
     """
@@ -136,29 +109,4 @@ def configuration():
     # Initializing machine
     enigma = Machine(rotors_obj, ref_obj, plugboard_obj)
     print("Machine created!")
-    done = 1
     return enigma
-
-
-def encode_message(message: str, machine: Machine):
-    message = message.upper()
-    enc_message = ""
-    for letter in message:
-        if letter.isalpha():
-            enc_message += machine.encode(letter)
-        else:
-            enc_message += letter
-    return enc_message
-
-
-def main():
-    print_presentation()
-    input("Press enter to enter configuration mode")
-    enigma = configuration()
-    message = input("Enter message to encode or decode: ")
-    encoded_message = encode_message(message, enigma)
-    print("Encoded message:", encoded_message)
-
-
-if __name__ == "__main__":
-    main()
