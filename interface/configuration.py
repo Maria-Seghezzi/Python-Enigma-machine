@@ -1,5 +1,6 @@
 from components import Rotor, Reflector, Plugboard
 from config.wiring_data import ROTORS_WIRINGS, REF_WIRING
+from machine import Machine
 
 
 def parse_connections(connection_string):
