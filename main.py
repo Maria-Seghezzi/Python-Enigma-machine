@@ -1,45 +1,63 @@
 from config.wiring_data import ROTORS_WIRINGS, REF_WIRING
-from components.rotor import Rotor
-from components.reflector import Reflector
+from components import Rotor, Reflector, Plugboard
 from machine import Machine
 
 # Future improvements:
 # - Add notchs
 # - Add plugboard
 
-# TODO:
-# Create function to print wirings
 
-
-def check_input_rotors(rotors):
+def parse_rotors(rotors_string):
     """
     Check if input contains valid rotors names
     """
     valid_input_name = ["I", "II", "III", "IV", "V"]
-    # Check length
-    if len(rotors) != 3:
-        print("Failed len")
-        return 0
-    # Check if elements are valid names and position, and that there are no duplicates
+
+    # Remove white spaces and create list
+    rotors = rotors_string.replace(" ", "").split(",")
+    # Create rotors list
+    rotors_list = []
     for r in rotors:
+        if ":" not in r:
+            raise ValueError
+        rotors_list.append(r.split(":"))
+
+    # Check length
+    if len(rotors_list) != 3:
+        raise ValueError
+    # Check if elements are valid names and position, and that there are no duplicates
+    for r in rotors_list:
         if r[0].upper() not in valid_input_name:
-            print(f"failed, {r} not in list {valid_input_name}")
-            return 0
+            raise ValueError
         valid_input_name.remove(r[0])
         if int(r[1]) < 0 or int(r[1]) > 26:
-            print("failed position")
-            return 0
-    return 1
+            raise ValueError
+    return rotors_list
 
 
-def check_input_ref(ref):
+def parse_ref(ref_string):
     """
     Check if input contains valid reflector name
     """
     valid_input = ["A", "B", "C"]
-    if ref.upper() not in valid_input:
-        return 0
+    if ref_string.upper() not in valid_input:
+        raise ValueError
     return 1
+
+
+def parse_connections(connection_string):
+    connections_list = connection_string.replace(" ", "").split(",")
+    connections = {}
+    for connection in connections_list:
+        if ":" not in connection:
+            raise ValueError
+        a, b = connection.split(":")
+        a, b = a.upper(), b.upper()
+        if a in connections or b in connections or a == b:
+            raise ValueError
+        connections[a] = b
+        connections[b] = a
+    return connections
 
 
 def print_presentation():
@@ -73,26 +91,16 @@ def configuration():
     rotors_s = input(
         "Insert rotors to use and initial positions separated by a comma (eg: I:0, II:1, III:0): "
     )
-    rotors_n = rotors_s.replace(" ", "").split(
-        ","
-    )  # Remove white spaces and creates list
-    rotors_n = list(r.split(":") for r in rotors_n)
-    # Check input
-    valid = 0
-    while not valid:
-        rotors_n = rotors_s.replace(" ", "").split(
-            ","
-        )  # Remove white spaces and creates list
-        rotors_n = list(r.split(":") for r in rotors_n)
-        print(rotors_n)
-        # Check input
-        if not check_input_rotors(rotors_n):
+    while True:
+        try:
+            rotors = parse_rotors(rotors_s)
+            break
+        except ValueError:
             rotors_s = input("Please insert a valid input: ")
-        else:
-            valid = 1
-    # Create list of Rotors
+
+    # Create list of rotor objects
     rotors_obj = []
-    for i, rotor in enumerate(rotors_n):
+    for i, rotor in enumerate(rotors):
         rotation_freq = 1 if i == 0 else 26 * i
         wiring = ROTORS_WIRINGS[rotor[0]]
         position = int(rotor[1])
@@ -100,19 +108,31 @@ def configuration():
 
     # Get reflector
     ref_s = input("Insert reflector to use (A, B or C): ").upper()
-    valid = 0
     # Check input
-    while not valid:
-        if not check_input_ref(ref_s):
-            ref_s = input("Please insert a valid input")
-        else:
-            valid = 1
+    while True:
+        try:
+            parse_ref(ref_s)
+            break
+        except ValueError:
+            ref_s = input("Please insert a valid input: ").upper()
+
     # Create Reflector
     wiring = REF_WIRING[ref_s]
     ref_obj = Reflector(wiring)
 
+    # Get plugboard connections
+    plug_s = input("Insert plugboard connections separated by a comma (eg A:B, C:D)")
+    while True:
+        try:
+            connections = parse_connections(plug_s)
+            break
+        except ValueError:
+            plug_s = input("Please insert a valid input: ")
+    # Create plugboard object
+    plugboard = Plugboard(connections)
+
     # Initializing machine
-    enigma = Machine(rotors_obj, ref_obj)
+    enigma = Machine(rotors_obj, ref_obj, plugboard)
     print("Machine created!")
     done = 1
     return enigma
