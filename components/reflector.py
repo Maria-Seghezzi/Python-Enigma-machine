@@ -8,4 +8,4 @@ class Reflector:
         Encodes letter, returns encoded letter (char)
         """
         letter_index = ord(letter) - 65
-        return self.wiring[(letter_index) % 26]
+        return self.wiring[(letter_index)]

@@ -21,22 +21,19 @@ class Machine:
         self.letter_count += 1
         enc_letter = letter
 
-        print("Encoding forward")
+        # Encode forward
         for rotor in self.rotors:
             enc_letter = rotor.encode_forward(enc_letter)
-            print(enc_letter)
 
-        print("going through reflector")
+        # Reflector
         enc_letter = self.reflector.encode(enc_letter)
-        print(enc_letter)
 
-        print("Encoding backwards")
+        # Encode backwards
         for rotor in reversed(self.rotors):
             enc_letter = rotor.encode_backward(enc_letter)
-            print(enc_letter)
 
         self.update()
-        return letter
+        return enc_letter
 
     def print_components(self, rotors=[1, 2, 3], reflector=1):
         """
@@ -52,7 +49,8 @@ class Machine:
             print("")
             # Print wiring
             for x in range(26):
-                print(r.wiring[(r.current_position + x) % 26], end="")
+                letter = chr(x + 65)
+                print(r.encode_forward(letter), end="")
             print("\n")
 
         # Print reflector

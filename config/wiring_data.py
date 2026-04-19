@@ -229,6 +229,7 @@ WIRING_R_C = [
     "N",
     "M",
     "H",
+    "L",
 ]
 
 ROTORS_WIRINGS = {
