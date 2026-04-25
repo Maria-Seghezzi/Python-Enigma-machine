@@ -7,17 +7,22 @@ def parse_connections(connection_string):
     """
     Check if input contains valid plugboard connections and return Plugboard object
     """
+    connection_string = connection_string.upper()
+    # Remove spaces and create list
     connections_list = connection_string.replace(" ", "").split(",")
+    # Create connection dict
     connections = {}
-    for connection in connections_list:
-        if ":" not in connection:
-            raise ValueError
-        a, b = connection.split(":")
-        a, b = a.upper(), b.upper()
-        if a in connections or b in connections or a == b:
-            raise ValueError
-        connections[a] = b
-        connections[b] = a
+    # Parse input if it isn't empty
+    if connections:
+        for connection in connections_list:
+            if ":" not in connection:
+                raise ValueError
+            a, b = connection.split(":")
+            a, b = a.upper(), b.upper()
+            if a in connections or b in connections or a == b:
+                raise ValueError
+            connections[a] = b
+            connections[b] = a
     # Create Plugboard object
     plugboard_obj = Plugboard(connections)
 
@@ -28,8 +33,10 @@ def parse_ref(ref_string):
     """
     Check if input contains valid reflector name and returns reflector object
     """
+    ref_string = ref_string.upper()
+    # Check if input is valid
     valid_input = ["A", "B", "C"]
-    if ref_string.upper() not in valid_input:
+    if ref_string not in valid_input:
         raise ValueError
     # Create Reflector
     wiring = REF_WIRING[ref_string]
@@ -43,7 +50,8 @@ def parse_rotors(rotors_string):
     """
     valid_input_name = ["I", "II", "III", "IV", "V"]
 
-    # Remove white spaces and create list
+    rotors_string = rotors_string.upper()
+    # Remove spaces and create list
     rotors = rotors_string.replace(" ", "").split(",")
     # Create rotors list
     rotors_list = []
@@ -57,7 +65,7 @@ def parse_rotors(rotors_string):
         raise ValueError
     # Check if elements are valid names and position, and that there are no duplicates
     for r in rotors_list:
-        if r[0].upper() not in valid_input_name:
+        if r[0] not in valid_input_name:
             raise ValueError
         valid_input_name.remove(r[0])
         if int(r[1]) < 0 or int(r[1]) > 26:
